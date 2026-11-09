@@ -1,0 +1,18 @@
+{
+  "name": "business-card-studio",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Excel 匯入、勾選、批次產生中英雙面 SVG 名片的純前端工具",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
+  },
+  "devDependencies": {
+    "vite": "^6.3.5"
+  }
+}
