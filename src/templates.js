@@ -196,19 +196,19 @@ const TRIANGLE = `<polygon points="42.8 0 48.8 0 45.8 6.2" fill="${RED}"/>`;
 const LEFT_CARD = `${TRIANGLE}
   ${LOGO}
   <g>
-    <text x="${TEXT_X}" y="16.6" font-size="{{name_zh_size}}" font-weight="600" fill="${RED}">{{name_zh}}</text>
-    <text x="${TEXT_X}" y="20.2" font-size="{{title_zh_size}}" fill="${RED}">{{title_zh}}</text>
+    <text x="${TEXT_X}" y="16.6" font-size="3.6" data-size="{{name_zh_size}}" font-weight="600" fill="${RED}">{{name_zh}}</text>
+    <text x="${TEXT_X}" y="20.2" font-size="2.6" data-size="{{title_zh_size}}" fill="${RED}">{{title_zh}}</text>
 
-    <text x="${TEXT_X}" y="25.6" font-size="{{company_zh_size}}" fill="${INK}">{{company_zh}}</text>
+    <text x="${TEXT_X}" y="25.6" font-size="2.7" data-size="{{company_zh_size}}" fill="${INK}">{{company_zh}}</text>
 
     <!-- 公司地址（靜態文字）：直接改這裡，或下載版型修改後上傳 -->
     <text x="${TEXT_X}" y="28.8" font-size="2.3" fill="${BODY}">台北市信義區範例路 100 號 5 樓</text>
 
-    <text x="${TEXT_X}" y="32.2" font-size="{{tel_line_size}}" fill="${BODY}">{{tel_line}}</text>
+    <text x="${TEXT_X}" y="32.2" font-size="2.3" data-size="{{tel_line_size}}" fill="${BODY}">{{tel_line}}</text>
     {{#if has_fax}}<text x="${TEXT_X}" y="35.2" font-size="2.3" fill="${BODY}">Fax {{fax}}</text>{{/if}}
     {{#if has_phone}}<text x="${TEXT_X}" y="38.2" font-size="2.3" fill="${BODY}">Mobile {{phone}}</text>{{/if}}
-    <text x="${TEXT_X}" y="41.8" font-size="{{email_size}}" fill="${BODY}">{{email}}</text>
-    <text x="${TEXT_X}" y="44.9" font-size="{{website_size}}" fill="${BODY}">{{website}}</text>
+    <text x="${TEXT_X}" y="41.8" font-size="2.3" data-size="{{email_size}}" fill="${BODY}">{{email}}</text>
+    <text x="${TEXT_X}" y="44.9" font-size="2.3" data-size="{{website_size}}" fill="${BODY}">{{website}}</text>
   </g>`;
 
 /** 右卡：英文（整張往右平移 90 mm） */
@@ -216,20 +216,20 @@ const RIGHT_CARD = `<g transform="translate(90 0)">
   ${TRIANGLE}
   ${LOGO}
   <g>
-    <text x="${TEXT_X}" y="16.2" font-size="{{name_en_size}}" font-weight="600" fill="${RED}">{{name_en}}</text>
-    {{#if has_title_en}}<text x="${TEXT_X}" y="19.9" font-size="{{title_en_size}}" fill="${RED}">{{title_en}}</text>{{/if}}
+    <text x="${TEXT_X}" y="16.2" font-size="3.4" data-size="{{name_en_size}}" font-weight="600" fill="${RED}">{{name_en}}</text>
+    {{#if has_title_en}}<text x="${TEXT_X}" y="19.9" font-size="2.5" data-size="{{title_en_size}}" fill="${RED}">{{title_en}}</text>{{/if}}
 
-    <text x="${TEXT_X}" y="25.2" font-size="{{company_en_size}}" fill="${INK}">{{company_en}}</text>
+    <text x="${TEXT_X}" y="25.2" font-size="2.5" data-size="{{company_en_size}}" fill="${INK}">{{company_en}}</text>
 
     <!-- 公司地址（靜態文字，英文） -->
     <text x="${TEXT_X}" y="28.4" font-size="2.25" fill="${BODY}">5F., No. 100, Example Rd.,</text>
     <text x="${TEXT_X}" y="31.2" font-size="2.25" fill="${BODY}">Xinyi Dist., Taipei, Taiwan</text>
 
-    <text x="${TEXT_X}" y="34.4" font-size="{{tel_line_size}}" fill="${BODY}">{{tel_line}}</text>
+    <text x="${TEXT_X}" y="34.4" font-size="2.3" data-size="{{tel_line_size}}" fill="${BODY}">{{tel_line}}</text>
     {{#if has_fax}}<text x="${TEXT_X}" y="37.4" font-size="2.3" fill="${BODY}">Fax {{fax}}</text>{{/if}}
     {{#if has_phone}}<text x="${TEXT_X}" y="40.4" font-size="2.3" fill="${BODY}">Mobile {{phone}}</text>{{/if}}
-    <text x="${TEXT_X}" y="44" font-size="{{email_size}}" fill="${BODY}">{{email}}</text>
-    <text x="${TEXT_X}" y="46.9" font-size="{{website_size}}" fill="${BODY}">{{website}}</text>
+    <text x="${TEXT_X}" y="44" font-size="2.3" data-size="{{email_size}}" fill="${BODY}">{{email}}</text>
+    <text x="${TEXT_X}" y="46.9" font-size="2.3" data-size="{{website_size}}" fill="${BODY}">{{website}}</text>
   </g>
 </g>`;
 
@@ -268,6 +268,8 @@ export function templateFile(template = CARD_TEMPLATE) {
   名片版型檔（180 × 54 mm，左邊中文卡、右邊英文卡）
   可直接用 Illustrator / Inkscape 修改文字、顏色、位置與地址，
   但請保留 {{…}} 佔位符，上傳後才會換成員工資料。
+  字級由程式依姓名長度自動計算（data-size 屬性）；若想固定字級，
+  把該 <text> 的 data-size 屬性刪掉即可。
 
   可用欄位：
 ${lines}
@@ -303,7 +305,22 @@ export function validateTemplate(text) {
  * @param {string} [template] 自訂版型；預設使用 CARD_TEMPLATE
  */
 export function renderCard(employee, brand, template = CARD_TEMPLATE) {
-  return renderTemplate(template, buildContext(employee, brand));
+  const svg = renderTemplate(template, buildContext(employee, brand));
+  return applyDataSizes(svg);
+}
+
+/** 把 <text ... font-size="3.6" data-size="3.2"> 的字級換成計算後的值。 */
+function applyDataSizes(svg) {
+  return svg.replace(/<text\b[^>]*>/g, (tag) => {
+    const match = tag.match(/\bdata-size="([\d.]+)"/);
+    if (!match) return tag;
+    const size = match[1];
+    const cleaned = tag.replace(/\sdata-size="[^"]*"/, '');
+    if (/\bfont-size="[^"]*"/.test(cleaned)) {
+      return cleaned.replace(/\bfont-size="[^"]*"/, `font-size="${size}"`);
+    }
+    return cleaned.replace(/>$/, ` font-size="${size}">`);
+  });
 }
 
 /** 移除檔名中不合法或容易出錯的字元。 */

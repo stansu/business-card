@@ -103,7 +103,9 @@ npm run preview  # 預覽 build 結果
 {{#if has_fax}} … {{/if}}       沒有傳真時隱藏
 ```
 
-也可以使用 `{{name_zh_size}}`、`{{company_en_size}}` 等字級變數，讓長名字自動縮小。
+字級會依姓名長度自動縮小（存在 `data-size` 屬性）。下載的版型直接用瀏覽器或
+Illustrator 打開時，佔位符會以正常字級顯示；若想固定字級，把該 `<text>` 的
+`data-size` 屬性刪掉即可。
 
 上傳的版型存在 `localStorage`（key：`business-card-template-v1`）；換電腦或無痕模式
 會回到預設版型。版型不可包含 `<script>` 或事件屬性。
