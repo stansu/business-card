@@ -1,5 +1,7 @@
 # 名片批次產生器 · Business Card Studio
 
+🔗 **線上使用：[https://stansu.github.io/business-card/](https://stansu.github.io/business-card/)**
+
 用 Excel 管理員工名單，勾選後一次產出中英並排的 SVG 名片。純前端（Vite + Vanilla JS），
 所有資料都在瀏覽器裡處理，不需要後端，也不會把員工資料上傳到任何地方。
 
