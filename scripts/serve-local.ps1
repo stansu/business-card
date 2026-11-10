@@ -4,7 +4,8 @@
 param([int]$Port = 8787)
 
 $ErrorActionPreference = 'Stop'
-$root = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..')).TrimEnd('\')
+$sep = [System.IO.Path]::DirectorySeparatorChar
+$root = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..')).TrimEnd($sep)
 
 $listener = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Loopback, $Port)
 try {
@@ -87,10 +88,10 @@ try {
             $path = [System.Uri]::UnescapeDataString($parts[1].Split('?')[0])
             if ($path -eq '/' -or $path -eq '') { $path = '/index.html' }
 
-            $relative = $path.TrimStart('/') -replace '/', '\'
-            $full = [System.IO.Path]::GetFullPath((Join-Path $root $relative))
+            $relative = $path.TrimStart('/')
+            $full = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($root, $relative))
 
-            if (-not $full.StartsWith($root + '\', [System.StringComparison]::OrdinalIgnoreCase)) {
+            if (-not $full.StartsWith($root + $sep, [System.StringComparison]::OrdinalIgnoreCase)) {
                 Send-Response $stream 403 'text/plain; charset=utf-8' ([System.Text.Encoding]::UTF8.GetBytes('Forbidden')) $false
                 continue
             }
