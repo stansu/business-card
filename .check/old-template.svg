@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="180mm" height="54mm" viewBox="0 0 180 54"
+     font-family="'Segoe UI','Helvetica Neue',Helvetica,Arial,'Noto Sans TC','PingFang TC','Microsoft JhengHei',sans-serif" role="img" aria-label="{{aria}}">
+  <title>{{name_zh}}｜名片</title>
+
+  <rect width="180" height="54" fill="#FFFFFF"/>
+
+  <polygon points="42.8 0 48.8 0 45.8 6.2" fill="#D0212F"/>
+  <g transform="translate(27.6 13.5) scale(0.242)" fill="#D0212F" aria-label="EX">
+    <path d="M0 0h6.6v32H0z"/>
+    <path d="M0 0h23v6.6H0z"/>
+    <path d="M0 12.4h19v6.6H0z"/>
+    <path d="M0 25.4h23v6.6H0z"/>
+    <path d="M36 0h7.2L64 32h-7.2z"/>
+    <path d="M56.8 0H64L43.2 32h-7.2z"/>
+  </g>
+  <g>
+    <text x="45.2" y="16.6" font-size="{{name_zh_size}}" font-weight="600" fill="#D0212F">{{name_zh}}</text>
+    <text x="45.2" y="20.2" font-size="{{title_zh_size}}" fill="#D0212F">{{title_zh}}</text>
+
+    <text x="45.2" y="25.6" font-size="{{company_zh_size}}" fill="#333331">{{company_zh}}</text>
+
+    <!-- 公司地址（靜態文字）：直接改這裡，或下載版型修改後上傳 -->
+    <text x="45.2" y="28.8" font-size="2.3" fill="#46464A">台北市信義區範例路 100 號 5 樓</text>
+
+    <text x="45.2" y="32.2" font-size="{{tel_line_size}}" fill="#46464A">{{tel_line}}</text>
+    {{#if has_fax}}<text x="45.2" y="35.2" font-size="2.3" fill="#46464A">Fax {{fax}}</text>{{/if}}
+    {{#if has_phone}}<text x="45.2" y="38.2" font-size="2.3" fill="#46464A">Mobile {{phone}}</text>{{/if}}
+    <text x="45.2" y="41.8" font-size="{{email_size}}" fill="#46464A">{{email}}</text>
+    <text x="45.2" y="44.9" font-size="{{website_size}}" fill="#46464A">{{website}}</text>
+  </g>
+
+  {{#if has_english}}
+  <g transform="translate(90 0)">
+  <polygon points="42.8 0 48.8 0 45.8 6.2" fill="#D0212F"/>
+  <g transform="translate(27.6 13.5) scale(0.242)" fill="#D0212F" aria-label="EX">
+    <path d="M0 0h6.6v32H0z"/>
+    <path d="M0 0h23v6.6H0z"/>
+    <path d="M0 12.4h19v6.6H0z"/>
+    <path d="M0 25.4h23v6.6H0z"/>
+    <path d="M36 0h7.2L64 32h-7.2z"/>
+    <path d="M56.8 0H64L43.2 32h-7.2z"/>
+  </g>
+  <g>
+    <text x="45.2" y="16.2" font-size="{{name_en_size}}" font-weight="600" fill="#D0212F">{{name_en}}</text>
+    {{#if has_title_en}}<text x="45.2" y="19.9" font-size="{{title_en_size}}" fill="#D0212F">{{title_en}}</text>{{/if}}
+
+    <text x="45.2" y="25.2" font-size="{{company_en_size}}" fill="#333331">{{company_en}}</text>
+
+    <!-- 公司地址（靜態文字，英文） -->
+    <text x="45.2" y="28.4" font-size="2.25" fill="#46464A">5F., No. 100, Example Rd.,</text>
+    <text x="45.2" y="31.2" font-size="2.25" fill="#46464A">Xinyi Dist., Taipei, Taiwan</text>
+
+    <text x="45.2" y="34.4" font-size="{{tel_line_size}}" fill="#46464A">{{tel_line}}</text>
+    {{#if has_fax}}<text x="45.2" y="37.4" font-size="2.3" fill="#46464A">Fax {{fax}}</text>{{/if}}
+    {{#if has_phone}}<text x="45.2" y="40.4" font-size="2.3" fill="#46464A">Mobile {{phone}}</text>{{/if}}
+    <text x="45.2" y="44" font-size="{{email_size}}" fill="#46464A">{{email}}</text>
+    <text x="45.2" y="46.9" font-size="{{website_size}}" fill="#46464A">{{website}}</text>
+  </g>
+</g>
+  {{/if}}
+</svg>

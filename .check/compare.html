@@ -1,0 +1,28 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+  body{margin:0;background:#f4f2ec;font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;color:#1c2422}
+  .page{max-width:1280px;margin:0 auto;padding:28px 32px 36px}
+  h1{font-size:20px;margin:0 0 6px}
+  p.sub{margin:0 0 22px;color:#68766f;font-size:13px}
+  .case{background:#fff;border:1px solid #e4dfd2;border-radius:14px;padding:16px 18px;margin-bottom:18px;box-shadow:0 2px 10px rgba(20,30,28,.05)}
+  .case h2{font-size:14px;margin:0 0 4px}
+  .case h2 .bad{color:#b3261e}
+  .case h2 .good{color:#1f6f66}
+  .case p{margin:0 0 12px;font-size:12.5px;color:#68766f}
+  .case img{width:100%;display:block;border-radius:6px;border:1px solid #eee9dd}
+  code{font-family:monospace;background:#f4f1e8;padding:1px 5px;border-radius:4px;font-size:12px}
+</style></head><body><div class="page">
+  <h1>名片版型：修正前 vs 修正後</h1>
+  <p class="sub">兩張都用 librsvg 渲染（Inkscape 也是用同一套 Cairo／SVG 渲染，字級行為一致）。</p>
+
+  <div class="case">
+    <h2><span class="bad">修正前</span>　font-size 本身也是 <code>{{name_zh_size}}</code> → 無效值，退回預設字級</h2>
+    <p>佔位符變成 16px 左右，在 180 mm 的畫布上等於十幾 mm，所以全部疊在一起。</p>
+    <img src="old-2x.png">
+  </div>
+
+  <div class="case">
+    <h2><span class="good">修正後</span>　每個 &lt;text&gt; 先給正常字級，計算值放在 data-size</h2>
+    <p>姓名 3.6 mm、內文 2.3 mm；下載後直接打開就是正常大小，上傳才會代入資料。</p>
+    <img src="new-2x.png">
+  </div>
+</div></body></html>

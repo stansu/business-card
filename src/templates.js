@@ -266,6 +266,7 @@ export function templateFile(template = CARD_TEMPLATE) {
   const lines = TEMPLATE_TOKENS.map(([key, desc]) => `    {{${key}}}  ${desc}`).join('\n');
   const header = `<!--
   名片版型檔（180 × 54 mm，左邊中文卡、右邊英文卡）
+  版型版本：2026-11-10.2（每個 <text> 都有預設字級）
   可直接用 Illustrator / Inkscape 修改文字、顏色、位置與地址，
   但請保留 {{…}} 佔位符，上傳後才會換成員工資料。
   字級由程式依姓名長度自動計算（data-size 屬性）；若想固定字級，
