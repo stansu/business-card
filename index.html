@@ -42,7 +42,7 @@
           </span>
           <div class="titles">
             <h1>名片批次產生器</h1>
-            <p>Excel 匯入 · 勾選 · 匯出中英雙面 SVG（90 × 54 mm）</p>
+            <p>Excel 匯入 · 勾選 · 匯出中英並排 SVG（180 × 54 mm）</p>
           </div>
         </div>
         <div class="topbar-actions">
@@ -101,45 +101,39 @@
               <label>傳真 Fax
                 <input data-brand="fax" type="text" spellcheck="false" />
               </label>
-              <label>地址（中文）
-                <input data-brand="address_zh" type="text" />
-              </label>
-              <label>地址（英文）
-                <input data-brand="address_en" type="text" spellcheck="false" />
-              </label>
               <label>網站
                 <input data-brand="website" type="text" spellcheck="false" placeholder="www.example.com" />
-              </label>
-            </div>
-
-            <p class="brand-sub">分公司／第二辦公室<span class="hint">（留空則不顯示）</span></p>
-            <div class="brand-grid is-compact">
-              <label>分公司名稱（英文）
-                <input data-brand="branch_title_en" type="text" spellcheck="false" placeholder="Taichung office" />
-              </label>
-              <label>分公司地址（中文）
-                <input data-brand="branch_zh" type="text" />
-              </label>
-              <label>分公司地址（英文）
-                <input data-brand="branch_en" type="text" spellcheck="false" />
-              </label>
-              <label>分公司電話
-                <input data-brand="branch_tel" type="text" spellcheck="false" />
-              </label>
-              <label>分公司傳真
-                <input data-brand="branch_fax" type="text" spellcheck="false" />
               </label>
               <div class="brand-actions">
                 <button id="reset-brand" class="btn tiny ghost" type="button">還原預設</button>
               </div>
             </div>
+            <p class="brand-note">公司地址不在這裡輸入，直接寫在版型裡（見下一區）。</p>
           </details>
         </section>
 
-        <!-- 3. 名單 -->
+        <!-- 3. 版型 -->
+        <section class="panel" aria-labelledby="template-title">
+          <div class="panel-head">
+            <h2 id="template-title">3 · 名片版型</h2>
+            <span id="template-status" class="hint">使用預設版型</span>
+          </div>
+          <p class="template-desc">
+            下載 SVG 版型後，可用 Illustrator／Inkscape 修改地址、顏色或位置；請保留
+            <code>{{欄位}}</code> 佔位符，上傳後就會套用到所有名片。
+          </p>
+          <div class="template-actions">
+            <button id="download-template" class="btn ghost" type="button">下載版型 SVG</button>
+            <button id="upload-template" class="btn ghost" type="button">上傳自訂版型</button>
+            <button id="reset-template" class="btn ghost" type="button" disabled>還原預設版型</button>
+            <input id="template-input" type="file" accept=".svg,image/svg+xml" hidden />
+          </div>
+        </section>
+
+        <!-- 4. 名單 -->
         <section class="panel table-panel" aria-labelledby="list-title">
           <div class="panel-head">
-            <h2 id="list-title">3 · 選擇要輸出的人員</h2>
+            <h2 id="list-title">4 · 選擇要輸出的人員</h2>
             <span id="status-line" class="hint" aria-live="polite">共 0 筆</span>
           </div>
 
@@ -207,12 +201,8 @@
       </div>
       <div class="preview-body">
         <figure>
-          <img id="preview-front" alt="名片正面預覽" />
-          <figcaption>正面 · 中文</figcaption>
-        </figure>
-        <figure>
-          <img id="preview-back" alt="名片背面預覽" />
-          <figcaption>背面 · 英文</figcaption>
+          <img id="preview-image" alt="名片預覽" />
+          <figcaption>左：中文版 · 右：英文版（沒有英文資料時右半留白）</figcaption>
         </figure>
       </div>
       <div class="preview-foot">

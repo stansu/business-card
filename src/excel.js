@@ -18,8 +18,6 @@ export const FIELDS = [
   ['ext', '分機'],
   ['phone', '手機'],
   ['email', 'Email'],
-  ['address_zh', '地址'],
-  ['address_en', '英文地址'],
 ];
 
 const ALIASES = {
@@ -33,8 +31,6 @@ const ALIASES = {
   ext: ['ext', 'extension', '分機', '分機號碼', '內線'],
   phone: ['phone', 'mobile', 'cell', '手機', '手機號碼', '行動電話'],
   email: ['email', 'e_mail', 'mail', '電子郵件', 'email_address', '信箱'],
-  address_zh: ['address_zh', 'address', '地址', '中文地址', '通訊地址'],
-  address_en: ['address_en', 'english_address', '英文地址'],
 };
 
 const ALIAS_LOOKUP = new Map();

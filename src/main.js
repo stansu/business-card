@@ -1,28 +1,28 @@
 /**
  * 名片批次產生器 — 主程式
- * 流程：上傳 Excel → 解析 → 搜尋／勾選 → 依勾選名單輸出中英雙面 SVG
+ * 流程：上傳 Excel → 解析 → 搜尋／勾選 → 依勾選名單輸出單張雙語 SVG
  */
 
 import './style.css';
+import {
+  renderCard,
+  buildFileName,
+  templateFile,
+  validateTemplate,
+  CARD_TEMPLATE,
+} from './templates.js';
 import { parseWorkbook } from './excel.js';
-import { renderCard, buildFileName } from './templates.js';
 
-const STORAGE_KEY = 'business-card-brand-v2';
-const CARD_SIDES = ['front', 'back'];
+const BRAND_KEY = 'business-card-brand-v3';
+const TEMPLATE_KEY = 'business-card-template-v1';
+const MAX_TEMPLATE_BYTES = 400 * 1024;
 
-// 預設值取自實際卡面；使用者可在「公司資訊」面板修改，設定會存在瀏覽器裡。
+// 預設值取自示意資料；使用者可在「公司資訊」面板修改，設定會存在瀏覽器裡。
 const DEFAULT_BRAND = {
   company_zh: '範例科技股份有限公司',
   company_en: 'EXAMPLE TECHNOLOGY CO., LTD.',
   tel: '886 2 1234 5678',
   fax: '886 2 1234 5679',
-  address_zh: '台北市信義區範例路 100 號 5 樓',
-  address_en: '5F., No. 100, Example Rd., Xinyi Dist., Taipei, Taiwan',
-  branch_title_en: 'Taichung office',
-  branch_zh: '台中市西屯區範例路 88 號 3 樓',
-  branch_en: '3F., No. 88, Example Rd., Xitun Dist., Taichung, Taiwan',
-  branch_tel: '886 4 1234 5678',
-  branch_fax: '1234 5679',
   website: 'www.example.com',
 };
 
@@ -38,6 +38,11 @@ const el = {
   sampleLink: $('sample-link'),
   brandInputs: [...document.querySelectorAll('[data-brand]')],
   resetBrand: $('reset-brand'),
+  templateStatus: $('template-status'),
+  downloadTemplate: $('download-template'),
+  uploadTemplate: $('upload-template'),
+  resetTemplate: $('reset-template'),
+  templateInput: $('template-input'),
   search: $('search'),
   selectAll: $('select-all'),
   clearSelection: $('clear-selection'),
@@ -54,8 +59,7 @@ const el = {
   dialog: $('preview-dialog'),
   previewTitle: $('preview-title'),
   previewSub: $('preview-sub'),
-  previewFront: $('preview-front'),
-  previewBack: $('preview-back'),
+  previewImage: $('preview-image'),
   previewClose: $('preview-close'),
   previewDownload: $('preview-download'),
 };
@@ -65,15 +69,16 @@ const state = {
   selected: new Set(),
   query: '',
   brand: loadBrand(),
+  template: loadTemplate(),
   preview: null,
   busy: false,
 };
 
-/* ────────────────────────── 品牌資訊 ────────────────────────── */
+/* ────────────────────────── 公司資訊 ────────────────────────── */
 
 function loadBrand() {
   try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}');
+    const saved = JSON.parse(localStorage.getItem(BRAND_KEY) ?? '{}');
     const merged = { ...DEFAULT_BRAND };
     for (const key of Object.keys(DEFAULT_BRAND)) {
       if (typeof saved[key] === 'string') merged[key] = saved[key];
@@ -86,7 +91,7 @@ function loadBrand() {
 
 function saveBrand() {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state.brand));
+    localStorage.setItem(BRAND_KEY, JSON.stringify(state.brand));
   } catch {
     /* 無痕模式可能無法寫入，忽略即可 */
   }
@@ -114,6 +119,83 @@ el.resetBrand.addEventListener('click', () => {
   saveBrand();
   if (el.dialog.open && state.preview) openPreview(state.preview, { keepOpen: true });
   showToast('已還原預設公司資訊。');
+});
+
+/* ────────────────────────── 名片版型 ────────────────────────── */
+
+function activeTemplate() {
+  return state.template || CARD_TEMPLATE;
+}
+
+function loadTemplate() {
+  try {
+    const saved = localStorage.getItem(TEMPLATE_KEY);
+    if (!saved) return null;
+    return validateTemplate(saved) ? null : saved;
+  } catch {
+    return null;
+  }
+}
+
+function updateTemplateUI() {
+  if (state.template) {
+    const kb = (state.template.length / 1024).toFixed(1);
+    el.templateStatus.textContent = `使用自訂版型（${kb} KB）`;
+  } else {
+    el.templateStatus.textContent = '使用預設版型';
+  }
+  el.resetTemplate.disabled = !state.template;
+}
+
+el.downloadTemplate.addEventListener('click', () => {
+  triggerDownload(templateFile(activeTemplate()), 'business-card-template.svg');
+  showToast('已下載版型，可用 Illustrator／Inkscape 修改後再上傳。');
+});
+
+el.uploadTemplate.addEventListener('click', () => el.templateInput.click());
+
+el.templateInput.addEventListener('change', async () => {
+  const [file] = el.templateInput.files ?? [];
+  el.templateInput.value = '';
+  if (!file) return;
+
+  if (!/\.svg$/i.test(file.name)) {
+    showToast('請上傳 .svg 版型檔。', 'error');
+    return;
+  }
+  if (file.size > MAX_TEMPLATE_BYTES) {
+    showToast('版型檔案過大（上限 400 KB）。', 'error');
+    return;
+  }
+
+  const text = await file.text();
+  const error = validateTemplate(text);
+  if (error) {
+    showToast(error, 'error');
+    return;
+  }
+
+  state.template = text;
+  try {
+    localStorage.setItem(TEMPLATE_KEY, text);
+  } catch {
+    showToast('版型已套用，但瀏覽器無法儲存，重新整理後會回到預設。', 'warn');
+  }
+  updateTemplateUI();
+  if (el.dialog.open && state.preview) openPreview(state.preview, { keepOpen: true });
+  showToast('已套用自訂版型。', 'success');
+});
+
+el.resetTemplate.addEventListener('click', () => {
+  state.template = null;
+  try {
+    localStorage.removeItem(TEMPLATE_KEY);
+  } catch {
+    /* ignore */
+  }
+  updateTemplateUI();
+  if (el.dialog.open && state.preview) openPreview(state.preview, { keepOpen: true });
+  showToast('已還原預設版型。');
 });
 
 /* ────────────────────────── 匯入 ────────────────────────── */
@@ -206,8 +288,9 @@ function renderTable() {
   }
 
   const hasData = state.rows.length > 0;
-  el.table.hidden = !hasData;
-  el.empty.hidden = hasData;
+  el.empty.hidden = hasData && rows.length > 0;
+  el.table.hidden = !hasData || !rows.length;
+
   if (!hasData) {
     el.emptyTitle.textContent = '尚未匯入資料';
     el.emptySub.textContent = '上傳 Excel 後，員工名單會出現在這裡。';
@@ -215,8 +298,6 @@ function renderTable() {
     el.emptyTitle.textContent = '找不到符合的員工';
     el.emptySub.textContent = '換個關鍵字試試，或清空搜尋欄位。';
   }
-  el.empty.hidden = hasData && rows.length > 0;
-  el.table.hidden = !hasData || !rows.length;
 }
 
 function createRow(employee) {
@@ -362,6 +443,7 @@ async function downloadCards(employees, button, label) {
   state.busy = true;
   button.disabled = true;
   const originalLabel = label.textContent;
+  const template = activeTemplate();
   let files = 0;
 
   try {
@@ -369,16 +451,14 @@ async function downloadCards(employees, button, label) {
       const employee = employees[index];
       label.textContent = `產生中 ${index + 1}/${employees.length}`;
 
-      for (const side of CARD_SIDES) {
-        const svg = renderCard(side, employee, state.brand);
-        triggerDownload(svg, buildFileName(employee, side));
-        files += 1;
-        // 連續觸發下載時給瀏覽器一點喘息空間，避免被誤判為惡意行為
-        await sleep(220);
-      }
+      const svg = renderCard(employee, state.brand, template);
+      triggerDownload(svg, buildFileName(employee));
+      files += 1;
+      // 連續觸發下載時給瀏覽器一點喘息空間，避免被誤判為惡意行為
+      await sleep(180);
     }
     showToast(
-      `已產生 ${employees.length} 位員工、共 ${files} 個 SVG 檔。${
+      `已產生 ${files} 個 SVG 檔。${
         employees.length > 1 ? '若瀏覽器詢問「允許多重下載」，請選擇允許。' : ''
       }`,
       'success',
@@ -412,13 +492,15 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function openPreview(employee, { keepOpen = false } = {}) {
   state.preview = employee;
-  const front = renderCard('front', employee, state.brand);
-  const back = renderCard('back', employee, state.brand);
+  const svg = renderCard(employee, state.brand, activeTemplate());
 
-  el.previewFront.src = svgToDataUrl(front);
-  el.previewBack.src = svgToDataUrl(back);
+  el.previewImage.src = svgToDataUrl(svg);
   el.previewTitle.textContent = employee.name_zh || employee.name_en || '名片預覽';
-  el.previewSub.textContent = [employee.title_zh || employee.title_en, employee.employee_id]
+  el.previewSub.textContent = [
+    employee.title_zh || employee.title_en,
+    employee.employee_id,
+    employee.phone ? employee.phone : '無手機號碼',
+  ]
     .filter(Boolean)
     .join(' · ');
 
@@ -453,5 +535,6 @@ function showToast(message, tone = 'info') {
 /* ────────────────────────── 初始化 ────────────────────────── */
 
 syncBrandInputs();
+updateTemplateUI();
 renderTable();
 updateSelectionUI();
