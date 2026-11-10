@@ -42,10 +42,19 @@
 
 ```bash
 npm install
-npm run dev      # http://localhost:5173
-npm run build    # 產出 dist/
-npm run preview  # 預覽 build 結果
+npm run dev              # http://localhost:5173/dev.html
+npm run build            # 產出 dist/（入口 dev.html → 改名 index.html）
+npm run preview          # 預覽 build 結果
+npm run build:standalone # 重新產生根目錄的單檔 index.html
 ```
+
+### 不想裝 Node？直接開 index.html
+
+下載 repo ZIP、解壓後，直接雙擊根目錄的 `index.html` 即可使用，
+不需要 Node、不需要伺服器，功能與 GitHub Pages 完全相同（單檔 400 KB，含 SheetJS 與範例 Excel）。
+
+這個 `index.html` 是 `npm run build:standalone` 產生的打包檔；要改程式請編輯
+`dev.html` 與 `src/`，再重新執行 `npm run build:standalone`。
 
 > `package.json` 的 `xlsx` 指向 SheetJS 官方 CDN 的 0.20.3 tarball
 > （npm registry 上的 0.18.5 有多個已知漏洞）。`npm install` / `npm ci` 需要連得到
@@ -125,7 +134,8 @@ Illustrator 打開時，佔位符會以正常字級顯示；若想固定字級�
 
 ```
 .
-├── index.html                     # 頁面骨架（上傳區、公司資訊、版型、表格、預覽）
+├── index.html                     # 單檔版（自動產生，可直接雙擊；請勿手改）
+├── dev.html                       # Vite 開發入口（頁面骨架）
 ├── src/
 │   ├── main.js                    # 匯入流程、搜尋、勾選、下載、預覽、版型管理
 │   ├── excel.js                   # SheetJS 解析、標題列偵測、欄位別名對應
@@ -134,6 +144,9 @@ Illustrator 打開時，佔位符會以正常字級顯示；若想固定字級�
 ├── public/
 │   └── sample-employees.xlsx      # 範例名單
 ├── docs/preview.png               # README 預覽圖
+├── scripts/
+│   ├── rename-build.mjs           # dist/dev.html → dist/index.html
+│   └── build-standalone.mjs       # 產生根目錄單檔 index.html
 ├── .github/workflows/deploy.yml   # GitHub Pages 部署
 ├── vite.config.js
 └── package.json

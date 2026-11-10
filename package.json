@@ -6,8 +6,9 @@
   "description": "Excel 匯入、勾選、批次產生中英雙面 SVG 名片的純前端工具",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "build": "vite build && node scripts/rename-build.mjs",
+    "preview": "vite preview",
+    "build:standalone": "npm run build && node scripts/build-standalone.mjs"
   },
   "dependencies": {
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"

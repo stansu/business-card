@@ -4,3 +4,8 @@ dist/
 .DS_Store
 *.local
 npm-debug.log*
+
+# 本機測試暫存
+.check/
+.verify/
+.ff/

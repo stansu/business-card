@@ -200,7 +200,11 @@ el.resetTemplate.addEventListener('click', () => {
 
 /* ────────────────────────── 匯入 ────────────────────────── */
 
-el.sampleLink.href = `${import.meta.env.BASE_URL}sample-employees.xlsx`;
+// 建置時由 vite.config.js 內嵌成 data URI；開發模式下則連到 public/ 的檔案。
+el.sampleLink.href =
+  typeof __SAMPLE_XLSX__ === 'string'
+    ? __SAMPLE_XLSX__
+    : `${import.meta.env.BASE_URL}sample-employees.xlsx`;
 
 el.dropzone.addEventListener('click', () => el.fileInput.click());
 el.dropzone.addEventListener('keydown', (event) => {
