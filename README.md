@@ -58,6 +58,32 @@ npm run build:standalone # 重新產生根目錄的單檔 index.html
 這個 `index.html` 是 `npm run build:standalone` 產生的打包檔；要改程式請編輯
 `dev.html` 與 `src/`，再重新執行 `npm run build:standalone`。
 
+### 公司電腦擋 file:// 上傳
+
+有些公司電腦的瀏覽器政策會禁止 `file://` 頁面選檔或拖曳上傳。改用本機伺服器即可，
+資料仍然只在你的電腦上：
+
+1. 雙擊根目錄的 `start-server.bat`（使用 Windows 內建 PowerShell，免安裝）。
+2. 瀏覽器會自動開啟 <http://127.0.0.1:8787/>。
+3. 用完關掉黑色視窗即可。
+
+連接埠被占用時可以換一個：
+
+```bat
+start-server.bat -Port 8788
+```
+
+如果 `.bat` 被公司政策封鎖，或出現「已封鎖」提示（右鍵 → 內容 → 解除封鎖），
+也可以改用：
+
+```bash
+python -m http.server 8787
+# 或
+npx serve . -l 8787
+```
+
+伺服器只綁定 `127.0.0.1`，不會對外開放。
+
 > `package.json` 的 `xlsx` 指向 SheetJS 官方 CDN 的 0.20.3 tarball
 > （npm registry 上的 0.18.5 有多個已知漏洞）。`npm install` / `npm ci` 需要連得到
 > `cdn.sheetjs.com`。
@@ -138,6 +164,7 @@ Illustrator 打開時，佔位符會以正常字級顯示；若想固定字級�
 .
 ├── index.html                     # 單檔版（自動產生，可直接雙擊；請勿手改）
 ├── dev.html                       # Vite 開發入口（頁面骨架）
+├── start-server.bat               # Windows 本機伺服器（給 file:// 被擋的環境）
 ├── src/
 │   ├── main.js                    # 匯入流程、搜尋、勾選、下載、預覽、版型管理
 │   ├── excel.js                   # SheetJS 解析、標題列偵測、欄位別名對應
@@ -148,7 +175,8 @@ Illustrator 打開時，佔位符會以正常字級顯示；若想固定字級�
 ├── docs/preview.png               # README 預覽圖
 ├── scripts/
 │   ├── rename-build.mjs           # dist/dev.html → dist/index.html
-│   └── build-standalone.mjs       # 產生根目錄單檔 index.html
+│   ├── build-standalone.mjs       # 產生根目錄單檔 index.html
+│   └── serve-local.ps1            # 127.0.0.1 靜態伺服器（PowerShell）
 ├── .github/workflows/deploy.yml   # GitHub Pages 部署
 ├── vite.config.js
 └── package.json
